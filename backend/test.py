@@ -18,12 +18,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch-size', type=int, default=32)
     parser.add_argument('--device', type=str, default='cpu')
-    parser.add_argument('--model-path', type=str, default='model.pt')
+    parser.add_argument('--model-path', type=str, default='checkpoints/model.pt')
     args = parser.parse_args()
 
     device = torch.device(args.device)
 
-    # Dummy test data (20 features, 2 classes)
+    # Dummy test data (4 features, 2 classes)
     X_test = torch.randn(200, 4)
     y_test = torch.randint(0, 2, (200,))
     loader = DataLoader(TensorDataset(X_test, y_test),
