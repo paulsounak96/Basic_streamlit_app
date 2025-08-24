@@ -1,4 +1,3 @@
-
 import argparse
 import torch
 from torch.utils.data import DataLoader, TensorDataset
@@ -12,10 +11,10 @@ def test_loop(model, dataloader, device):
             X, y = X.to(device), y.to(device)
             preds = model(X).argmax(dim=1)
             correct += (preds == y).sum().item()
-            total   += y.size(0)
+            total += y.size(0)
     print(f"Test Accuracy: {100 * correct / total:.2f}%")
 
-def main(args):
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--batch-size', type=int, default=32)
     parser.add_argument('--device', type=str, default='cpu')
@@ -23,15 +22,17 @@ def main(args):
     args = parser.parse_args()
 
     device = torch.device(args.device)
-    # Dummy test data
-    X_test = torch.randn(200, 20)
+
+    # Dummy test data (20 features, 2 classes)
+    X_test = torch.randn(200, 4)
     y_test = torch.randint(0, 2, (200,))
     loader = DataLoader(TensorDataset(X_test, y_test),
                         batch_size=args.batch_size)
 
-    model = FeedForwardNet(20, 64, 2).to(device)
+    model = FeedForwardNet(input_dim=4, hidden_dim=64, output_dim=2).to(device)
     model.load_state_dict(torch.load(args.model_path, map_location=device))
+
     test_loop(model, loader, device)
 
 if __name__ == '__main__':
-    main(None)
+    main()
