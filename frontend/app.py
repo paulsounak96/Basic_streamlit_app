@@ -1,25 +1,25 @@
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 import streamlit as st
-import torch
-from backend.model import FeedForwardNet
+import requests
 
-@st.cache_resource
-def load_model(path='../backend/model.pt'):
-    model = FeedForwardNet(20, 64, 2)
-    model.load_state_dict(torch.load(path, map_location='cpu'))
-    model.eval()
-    return model
+st.title("🔮 Feedforward Neural Network Demo")
+st.write("Enter 4 features and get a prediction from the trained model.")
 
-st.title('🔮 Feedforward Net Demo')
-model = load_model()
+features = []
+for i in range(4):
+    val = st.number_input(f"Feature {i+1}", value=0.0)
+    features.append(val)
 
-st.write('## Input Features')
-features = [st.slider(f'Feature {i}', -5.0, 5.0, 0.0) for i in range(20)]
-x = torch.tensor([features], dtype=torch.float32)
-
-if st.button('Predict'):
-    with st.spinner('Computing…'):
-        preds = model(x).softmax(dim=1)[0]
-    st.write('### Class 0 probability:', float(preds[0]))
-    st.write('### Class 1 probability:', float(preds[1]))
+if st.button("Predict"):
+    try:
+        response = requests.post(
+            "http://127.0.0.1:8000/predict",
+            json={"features": features}
+        )
+        if response.status_code == 200:
+            result = response.json()
+            st.success(f"Predicted class: {result['predicted_class']}")
+            st.write(f"Probabilities: {result['probabilities']}")
+        else:
+            st.error(f"Error: {response.text}")
+    except Exception as e:
+        st.error(f"Could not connect to backend: {e}")

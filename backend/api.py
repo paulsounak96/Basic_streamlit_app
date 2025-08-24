@@ -11,7 +11,7 @@ app = FastAPI()
 # Model params must match train.py
 input_dim, hidden_dim, output_dim = 4, 64, 2
 model = FeedForwardNet(input_dim, hidden_dim, output_dim)
-model.load_state_dict(torch.load("model.pt", map_location="cpu"))
+model.load_state_dict(torch.load("checkpoints/model.pt", map_location="cpu"))
 model.eval()
 
 @app.post("/predict")

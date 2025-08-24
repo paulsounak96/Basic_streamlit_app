@@ -2,6 +2,7 @@ import argparse
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 from model import FeedForwardNet
+import os
 
 def train_loop(model, dataloader, optimizer, criterion, device):
     model.train()
@@ -38,8 +39,10 @@ def main():
         train_loop(model, loader, optimizer, criterion, device)
         print(f"Epoch {epoch+1}/{args.epochs} done.")
 
-    torch.save(model.state_dict(), "model.pt")
-    print("✅ Model saved to model.pt")
+    # Save model in checkpoints/
+    os.makedirs("checkpoints", exist_ok=True)
+    torch.save(model.state_dict(), "checkpoints/model.pt")
+    print("✅ Model saved to checkpoints/model.pt")
 
 if __name__ == "__main__":
     main()
